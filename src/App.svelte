@@ -1,31 +1,38 @@
 <script>
   import { onMount } from 'svelte';
+  // import {videoStream} from './store.js'
+  
+  /**
+   * @type {MediaStream}
+   */
+  var videothing;
+  /**
+   * @type {HTMLVideoElement | null}
+   */
+  let video = null;
+  const mediaStream = window.navigator.mediaDevices.getUserMedia({video: true})
+  .then(videoStream => {
+     // yay we can now assign srcObject to videoStream
+    if (video!=null) {
+    video.srcObject = videoStream;}
+  })
+  .catch(e => {
+      // tell the user something went wrong, e has the reason for why it failed
+      console.error('something is wrong :c', e)
+  })
+  // let video = document.createElement('video');
+  
 
-  /** @type {string} */
-  export let name;
-
-  let counter = 0; // @hmr:keep
-
-  onMount(() => {
-    const interval = setInterval(() => {
-      counter++;
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  });
 </script>
 
 <main>
-  <h1>Color Tuner, yeah, No work has been done here</h1>
+  <h1>Color Tuner</h1>
   <p>
     Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
     how to build Svelte apps.
   </p>
-  <p>
-    This page has been open for {counter}s.
-  </p>
+    <!-- svelte-ignore a11y-media-has-caption -->
+    <video autoplay bind:this={video}/>
 </main>
 
 <style>
