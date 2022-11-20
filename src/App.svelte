@@ -34,8 +34,8 @@
      // yay we can now assign srcObject to videoStream
     if (video!=null) {
     video.srcObject = videoStream;
-    target_x = video.videoWidth/2;
-    target_y = video.videoWidth/2;
+    
+
   }
     
   })
@@ -46,6 +46,8 @@
   // let video = document.createElement('video');
 
   setInterval(()=> { 
+    target_x = video.videoWidth/2;
+    target_y = video.videoHeight/2;
     canvas = document.createElement('canvas');
     console.log("video width here", video.videoWidth);
     canvas.width = video.videoWidth;
@@ -55,32 +57,50 @@
     if (ctx) {
     ctx.drawImage(video, 0, 0);
     data = ctx.getImageData(0, 0,video.videoWidth,video.videoHeight);
-   
+    console.log(target_x,target_y);
 
     pixel = ctx.getImageData(target_x, target_y, 1, 1);
-    const uintc8 = new Uint8ClampedArray([0,0,0,1]);
 
-    let thiscolor = new ImageData(uintc8,1,1);
-    ctx.putImageData(thiscolor, target_x, target_y);
-    console.log(data?.data);
     let changeObject = document.getElementById("change");
-    let rectangle = document.getElementById("rectangle");
-    if (changeObject){
+    let complimentObject = document.getElementById("compliment");
+    let c2 = document.getElementById("c2");
+
+    if (changeObject && complimentObject && c2){
     changeObject.style.background = "rgba("+pixel.data+")";
+    complimentObject.style.color = "rgba("+getComplimentColor(pixel).data+")";
+    c2.style.border = "rgba("+getComplimentColor(pixel).data+") solid 4px";
     }
-    }} ,1000);
-    
+    }} ,100);
+
+  /**
+   * @param {any} input
+   * takes in a pixel
+   */
+  function getComplimentColor(input) {
+    let r = input.data[0];
+    let g = input.data[1];
+    let b = input.data[2];
+    const pixelarray = new Uint8ClampedArray([255-r, 255-g, 255-b,input.data[3]]);
+    let cc = new ImageData(pixelarray,1,1);
+    return cc;
+  }
 
 //  console.log(video.videoWidth, video.videoHeight);
 
 </script>
 
 <main id="change">
-  <h1 id="change">Seyan</h1>
-
+  <div id="compliment">
+    <h1>Seyan</h1>
+  </div>
   <p>{pixel?.data.toString()}</p>
+
+  
     <!-- svelte-ignore a11y-media-has-caption -->
+  <div class="parent">
     <video autoplay bind:this={video}/>
+  <div id="c2" class="aimline"></div>
+</div>
 
 </main>
 
@@ -95,20 +115,37 @@
   }
 
   h1 {
-    color: black;
     text-transform: uppercase;
     font-size: 4em;
     font-weight: 100;
-  }
+    font-family: 'Monoton', cursive;
 
+  }
+  p{
+    background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);
+    color:black;
+
+
+
+  }
   @media (min-width: 640px) {
     main {
       max-width: none;
     }
   }
-  #rectangle{
-    width:200px;
-    height:100px;
-    background:blue;
+  .parent{
+    position:relative;
+  }
+  .aimline{
+    width:5px;
+    height:5px;
+    border: 4px black solid;
+    position: absolute;
+    top:50%;
+    left:50%;
+    margin: 0 auto;
+    vertical-align: auto;
+    transform: translate(-7px, -7px);
+
   }
 </style>
