@@ -29,7 +29,7 @@
    * @param {HTMLVideoElement} videoObject
    */
 
-  const mediaStream = window.navigator.mediaDevices.getUserMedia({video: true})
+  const mediaStream = window.navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })
   .then(videoStream => {
      // yay we can now assign srcObject to videoStream
     if (video!=null) {
@@ -98,7 +98,7 @@
   
     <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
-    <video autoplay bind:this={video}/>
+    <video autoplay bind:this={video} playsinline/>
   <div id="c2" class="aimline"></div>
 </div>
 
