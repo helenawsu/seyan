@@ -105,11 +105,12 @@
   </div>
   <p>
     <span style="background-color:#FF0000;color:white"
-      >{pixel?.data[0].toString()}</span
+      >{(pixel?.data[0]).toString().padStart(3,"0")}
+      </span
     >
-    <span style="background-color:#00FF00">{pixel?.data[1].toString()}</span>
+    <span style="background-color:#00FF00">{(pixel?.data[1]).toString().padStart(3,"0")}</span>
     <span style="background-color:#0000FF;color:white"
-      >{pixel?.data[2].toString()}</span
+      >{(pixel?.data[2]).toString().padStart(3,"0")}</span
     >
   </p>
 </main>
@@ -122,6 +123,11 @@
     margin: 0 auto;
     background: black;
     height: 100vh;
+  }
+  @media screen and (max-width: 600px) {
+    main{
+      max-height:100vh;
+    }
   }
 
   h1 {
@@ -158,11 +164,6 @@
     max-height:50vh;
   }
 
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
-  }
   .parent {
     position: relative;
   }
