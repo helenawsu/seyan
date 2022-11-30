@@ -150,11 +150,12 @@
   }
   @media screen and (max-width: 600px) {
     span {
-      margin: 0.5em;
+      margin: 0em;
     }
   }
   video {
     max-width: 100%;
+    max-height:50vh;
   }
 
   @media (min-width: 640px) {
