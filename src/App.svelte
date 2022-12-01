@@ -1,6 +1,4 @@
 <script>
-  // import {videoStream} from './store.js'
-
   let paused = false;
   let video = document.createElement('video');
   let data;
@@ -29,12 +27,9 @@
    * @type {string}
    */
   let buttonstr;
-
-  let colornow;
   /**
    * @param {HTMLVideoElement} videoObject
    */
-
   const mediaStream = window.navigator.mediaDevices
     .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
     .then((videoStream) => {
@@ -67,7 +62,7 @@
 
       pixel = ctx.getImageData(target_x, target_y, 1, 1);
       hex = rgbToHex(pixel.data[0], pixel.data[1], pixel.data[2]);
-      buttonstr=hex;
+      buttonstr = hex;
 
       let changeObject = document.getElementById('change');
       let complimentObject = document.getElementById('compliment');
@@ -80,8 +75,8 @@
           'rgba(' + getComplimentColor(pixel).data + ')';
         complimentObject1.style.color =
           'rgba(' + getComplimentColor(pixel).data + ')';
-        // complimentObject.style.border =
-        // 'rgba(' + getComplimentColor(pixel).data + ') solid 2px';
+        complimentObject1.style.borderBottom =
+          'rgba(' + getComplimentColor(pixel).data + ')  solid 2px';
         c2.style.border =
           'rgba(' + getComplimentColor(pixel).data + ') solid 4px';
       }
@@ -113,18 +108,14 @@
       video.play();
     }
   }
-  let copyIndicator=false;
-  function copy(){
+  let copyIndicator = false;
+  function copy() {
     copyIndicator = true;
-    
-   
-      setTimeout(function(){
-        copyIndicator=false;
-}, 1000);
+    setTimeout(function () {
+      copyIndicator = false;
+    }, 1000);
+  }
 
-    }
-
-  
   /**
    * @param {{ toString: (arg0: number) => any; }} c
    */
@@ -141,18 +132,21 @@
   function rgbToHex(r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
-  $: buttonstr = copyIndicator ? hex + (" :P copied") : hex;
+  $: buttonstr = copyIndicator ? hex + ' copied' : hex;
 </script>
 
 <main id="change">
   <div>
     <h1>Seyan</h1>
   </div>
-  <button on:click={copy}><span style="font-size:1em " id="compliment1">{buttonstr}</span></button>
+  <button on:click={copy}
+    ><span style="font-size:1em " id="compliment1">{buttonstr}</span></button
+  >
   <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
     <button id="compliment" class="pauseButton" on:click={pauseVideo}>
-    <video id="myvideo" autoplay bind:this={video} playsinline /></button>
+      <video id="myvideo" autoplay bind:this={video} playsinline /></button
+    >
     <div id="c2" class="aimline" />
   </div>
   <p>
@@ -204,12 +198,11 @@
   }
   @media screen and (max-width: 600px) {
     h1 {
-    margin:0px;
-    padding:0px;
-    line-height: 100%;
+      margin: 0px;
+      padding: 0px;
+      /* line-height: 100%; */
+    }
   }
-  }
-  
   p {
     margin-bottom: 0px;
   }
@@ -230,15 +223,15 @@
   button {
     border: transparent;
     background: transparent;
-    padding:0px;
-    margin:0px;
+    padding: 0px;
+    margin: 0px;
   }
   .pauseButton {
     border: transparent;
     background: transparent;
     padding: 10px;
-    size:auto;
-    margin:0px;
+    size: auto;
+    margin: 0px;
   }
   .parent {
     position: relative;
