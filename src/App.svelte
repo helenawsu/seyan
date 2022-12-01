@@ -1,10 +1,7 @@
 <script>
   // import {videoStream} from './store.js'
 
-  /**
-   * @type {MediaStream}
-   */
-  var videothing;
+  let paused = false;
   let video = document.createElement('video');
   let data;
   /**
@@ -25,6 +22,10 @@
    */
   let pixel;
   /**
+   * @type {string}
+   */
+  let hex;
+  /**
    * @param {HTMLVideoElement} videoObject
    */
 
@@ -40,9 +41,11 @@
       // tell the user something went wrong, e has the reason for why it failed
       console.error('something is wrong :c', e);
     });
-  // let video = document.createElement('video');
-
-  setInterval(() => {
+  /**
+   * @type {HTMLVideoElement}
+   */
+  let vid = document.createElement('video');
+  let refreshIntervalId = setInterval(() => {
     target_x = video.videoWidth / 2;
     target_y = video.videoHeight / 2;
     canvas = document.createElement('canvas');
@@ -57,15 +60,21 @@
       console.log(target_x, target_y);
 
       pixel = ctx.getImageData(target_x, target_y, 1, 1);
+      hex = rgbToHex(pixel.data[0], pixel.data[1], pixel.data[2]);
 
       let changeObject = document.getElementById('change');
       let complimentObject = document.getElementById('compliment');
+      let complimentObject1 = document.getElementById('compliment1');
       let c2 = document.getElementById('c2');
 
-      if (changeObject && complimentObject && c2) {
+      if (changeObject && complimentObject && c2 && complimentObject1) {
         changeObject.style.background = 'rgba(' + pixel.data + ')';
         complimentObject.style.color =
           'rgba(' + getComplimentColor(pixel).data + ')';
+        complimentObject1.style.color =
+          'rgba(' + getComplimentColor(pixel).data + ')';
+        // complimentObject.style.border =
+        // 'rgba(' + getComplimentColor(pixel).data + ') solid 2px';
         c2.style.border =
           'rgba(' + getComplimentColor(pixel).data + ') solid 4px';
       }
@@ -89,30 +98,54 @@
     let cc = new ImageData(pixelarray, 1, 1);
     return cc;
   }
+  function pauseVideo() {
+    paused = !paused;
+    if (paused) {
+      video.pause();
+    } else {
+      video.play();
+    }
+  }
+  /**
+   * @param {{ toString: (arg0: number) => any; }} c
+   */
+  function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }
 
-  //  console.log(video.videoWidth, video.videoHeight);
+  /**
+   * @param {{ toString: (arg0: number) => any; }} r
+   * @param {{ toString: (arg0: number) => any; }} g
+   * @param {{ toString: (arg0: number) => any; }} b
+   */
+  function rgbToHex(r, g, b) {
+    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  }
 </script>
 
 <main id="change">
-  <div id="compliment">
+  <div>
     <h1>Seyan</h1>
   </div>
-
+  <span style="font-size:1em" id="compliment1">{hex}</span>
   <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
-    <video autoplay bind:this={video} playsinline />
+    <video id="myvideo" autoplay bind:this={video} playsinline />
     <div id="c2" class="aimline" />
   </div>
   <p>
     <span style="background-color:#FF0000;color:white"
-      >{(pixel?.data[0]).toString().padStart(3,"0")}
-      </span
+      >{(pixel?.data[0]).toString().padStart(3, '0')}
+    </span>
+    <span style="background-color:#00FF00"
+      >{(pixel?.data[1]).toString().padStart(3, '0')}</span
     >
-    <span style="background-color:#00FF00">{(pixel?.data[1]).toString().padStart(3,"0")}</span>
     <span style="background-color:#0000FF;color:white"
-      >{(pixel?.data[2]).toString().padStart(3,"0")}</span
+      >{(pixel?.data[2]).toString().padStart(3, '0')}</span
     >
   </p>
+  <button id="compliment" on:click={pauseVideo}>|> ||</button>
 </main>
 
 <style>
@@ -125,8 +158,8 @@
     height: 100vh;
   }
   @media screen and (max-width: 600px) {
-    main{
-      max-height:100vh;
+    main {
+      max-height: 100vh;
     }
   }
 
@@ -149,6 +182,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  p {
+    margin-bottom: 0px;
+  }
   span {
     font-family: 'Space Mono', monospace;
     font-size: 3em;
@@ -161,9 +197,15 @@
   }
   video {
     max-width: 100%;
-    max-height:50vh;
+    max-height: 50vh;
   }
-
+  button {
+    border: transparent;
+    background: transparent;
+    font-size: 3em;
+    padding: 10px;
+    font-family: 'Monoton', cursive;
+  }
   .parent {
     position: relative;
   }
