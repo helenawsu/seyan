@@ -26,6 +26,12 @@
    */
   let hex;
   /**
+   * @type {string}
+   */
+  let buttonstr;
+
+  let colornow;
+  /**
    * @param {HTMLVideoElement} videoObject
    */
 
@@ -61,6 +67,7 @@
 
       pixel = ctx.getImageData(target_x, target_y, 1, 1);
       hex = rgbToHex(pixel.data[0], pixel.data[1], pixel.data[2]);
+      buttonstr=hex;
 
       let changeObject = document.getElementById('change');
       let complimentObject = document.getElementById('compliment');
@@ -106,6 +113,18 @@
       video.play();
     }
   }
+  let copyIndicator=false;
+  function copy(){
+    copyIndicator = true;
+    
+   
+      setTimeout(function(){
+        copyIndicator=false;
+}, 1000);
+
+    }
+
+  
   /**
    * @param {{ toString: (arg0: number) => any; }} c
    */
@@ -122,16 +141,18 @@
   function rgbToHex(r, g, b) {
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
+  $: buttonstr = copyIndicator ? hex + (" :P copied") : hex;
 </script>
 
 <main id="change">
   <div>
     <h1>Seyan</h1>
   </div>
-  <span style="font-size:1em" id="compliment1">{hex}</span>
+  <button on:click={copy}><span style="font-size:1em " id="compliment1">{buttonstr}</span></button>
   <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
-    <video id="myvideo" autoplay bind:this={video} playsinline />
+    <button id="compliment" class="pauseButton" on:click={pauseVideo}>
+    <video id="myvideo" autoplay bind:this={video} playsinline /></button>
     <div id="c2" class="aimline" />
   </div>
   <p>
@@ -145,7 +166,6 @@
       >{(pixel?.data[2]).toString().padStart(3, '0')}</span
     >
   </p>
-  <button id="compliment" on:click={pauseVideo}>|> ||</button>
 </main>
 
 <style>
@@ -166,7 +186,7 @@
   h1 {
     text-transform: uppercase;
     display: inline;
-    font-size: 3em;
+    font-size: 3rem;
     font-weight: 100;
     font-family: 'Monoton', cursive;
     background-image: linear-gradient(
@@ -182,6 +202,14 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  @media screen and (max-width: 600px) {
+    h1 {
+    margin:0px;
+    padding:0px;
+    line-height: 100%;
+  }
+  }
+  
   p {
     margin-bottom: 0px;
   }
@@ -202,9 +230,15 @@
   button {
     border: transparent;
     background: transparent;
-    font-size: 3em;
+    padding:0px;
+    margin:0px;
+  }
+  .pauseButton {
+    border: transparent;
+    background: transparent;
     padding: 10px;
-    font-family: 'Monoton', cursive;
+    size:auto;
+    margin:0px;
   }
   .parent {
     position: relative;
