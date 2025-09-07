@@ -153,29 +153,35 @@
       async (blob) => {
         if (!blob) return;
         const file = new File([blob], 'color-card.png', { type: 'image/png' });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        // Detect Safari (including iOS Safari)
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        if (
+          isSafari &&
+          navigator.canShare &&
+          navigator.canShare({ files: [file] })
+        ) {
           try {
             await navigator.share({
               files: [file],
               title: colorName || hex,
               text: `Check out this color: ${colorName || hex}`,
             });
+            return;
           } catch (e) {
             // User cancelled or error
           }
-        } else {
-          // Fallback: download
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'color-card.png';
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }, 100);
         }
+        // Fallback: download for Chrome and most non-Safari browsers
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'color-card.png';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
       },
       'image/png'
     );
@@ -183,9 +189,44 @@
 </script>
 
 <main id="change">
-  <div>
+  <div style="position: relative; display: inline-block;">
+    <!-- SVG gradient text for html2canvas (hidden in UI, visible to html2canvas) -->
+    <svg
+      id="svg-title"
+      width="100%"
+      height="70"
+      viewBox="0 0 400 70"
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; z-index: -1;"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="red" />
+          <stop offset="16%" stop-color="orange" />
+          <stop offset="33%" stop-color="yellow" />
+          <stop offset="50%" stop-color="green" />
+          <stop offset="66%" stop-color="cyan" />
+          <stop offset="83%" stop-color="blue" />
+          <stop offset="100%" stop-color="purple" />
+        </linearGradient>
+      </defs>
+      <text
+        x="50%"
+        y="55"
+        text-anchor="middle"
+        font-family="'Monoton', cursive"
+        font-size="60"
+        font-weight="100"
+        fill="url(#text-gradient)"
+        style="text-transform:uppercase;"
+      >
+        Seyan
+      </text>
+    </svg>
     <h1>Seyan</h1>
   </div>
+  <br/>
   <button on:click={copy}>
     <span style="font-size:1em " id="compliment1">{buttonstr}</span>
   </button>
@@ -223,6 +264,17 @@
 </main>
 
 <style>
+  /* Hide SVG gradient title in UI, but html2canvas will still capture it */
+  #svg-title {
+    display: none;
+  }
+  /* Show SVG only when printing or for html2canvas (using a class if needed) */
+  .html2canvas-active #svg-title {
+    display: block !important;
+    opacity: 1 !important;
+    z-index: 1 !important;
+    position: static !important;
+  }
   main {
     text-align: center;
     padding: 1em;
