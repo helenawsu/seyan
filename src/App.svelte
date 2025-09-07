@@ -189,7 +189,7 @@
   <button on:click={copy}>
     <span style="font-size:1em " id="compliment1">{buttonstr}</span>
   </button>
-  <div style="color:white;font-size:1rem;margin-bottom:0.5em;">
+  <div style="color:white;font-size:0.5rem;margin-bottom:0.5em;">
     {#if colorName}
       <span><b>{colorName}</b></span>
     {/if}
@@ -326,8 +326,5 @@
     justify-content: center;
     cursor: pointer;
     transition: background 0.2s;
-  }
-  .share-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
   }
 </style>
