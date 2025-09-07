@@ -27,6 +27,7 @@
    * @type {string}
    */
   let buttonstr;
+  let colorName = '';
   /**
    * @param {HTMLVideoElement} videoObject
    */
@@ -46,29 +47,32 @@
    * @type {HTMLVideoElement}
    */
   let vid = document.createElement('video');
+  import { getColorName } from './colorNames.js';
+  let lastUpdate = 0;
   let refreshIntervalId = setInterval(() => {
+    const now = Date.now();
+    if (now - lastUpdate < 500) return;
+    lastUpdate = now;
     target_x = video.videoWidth / 2;
     target_y = video.videoHeight / 2;
     canvas = document.createElement('canvas');
-    console.log('video width here', video.videoWidth);
+    // console.log('video width here', video.videoWidth);
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     ctx = canvas.getContext('2d');
-    console.log(canvas.width);
+    // console.log(canvas.width);
     if (ctx) {
       ctx.drawImage(video, 0, 0);
       data = ctx.getImageData(0, 0, video.videoWidth, video.videoHeight);
-      console.log(target_x, target_y);
-
+      // console.log(target_x, target_y);
       pixel = ctx.getImageData(target_x, target_y, 1, 1);
       hex = rgbToHex(pixel.data[0], pixel.data[1], pixel.data[2]);
+      colorName = getColorName(hex);
       buttonstr = hex;
-
       let changeObject = document.getElementById('change');
       let complimentObject = document.getElementById('compliment');
       let complimentObject1 = document.getElementById('compliment1');
       let c2 = document.getElementById('c2');
-
       if (changeObject && complimentObject && c2 && complimentObject1) {
         changeObject.style.background = 'rgba(' + pixel.data + ')';
         complimentObject.style.color =
@@ -139,9 +143,14 @@
   <div>
     <h1>Seyan</h1>
   </div>
-  <button on:click={copy}
-    ><span style="font-size:1em " id="compliment1">{buttonstr}</span></button
-  >
+  <button on:click={copy}>
+    <span style="font-size:1em " id="compliment1">{buttonstr}</span>
+  </button>
+  <div style="color:white;font-size:1.2em;margin-bottom:0.5em;">
+    {#if colorName}
+      <span> <b>{colorName}</b></span>
+    {/if}
+  </div>
   <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
     <button id="compliment" class="pauseButton" on:click={pauseVideo}>
