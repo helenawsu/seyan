@@ -1,4 +1,5 @@
 <script>
+  import html2canvas from 'html2canvas';
   let paused = false;
   let video = document.createElement('video');
   let data;
@@ -137,6 +138,48 @@
     return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
   }
   $: buttonstr = copyIndicator ? hex + ' copied' : hex;
+
+  let shareCanvas;
+
+  async function shareColorCard() {
+    const cardElem = document.getElementById('change');
+    if (!cardElem) return;
+    const canvas = await html2canvas(cardElem, {
+      backgroundColor: null,
+      useCORS: true,
+      scale: 2,
+    });
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], 'color-card.png', { type: 'image/png' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: colorName || hex,
+              text: `Check out this color: ${colorName || hex}`,
+            });
+          } catch (e) {
+            // User cancelled or error
+          }
+        } else {
+          // Fallback: download
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'color-card.png';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+        }
+      },
+      'image/png'
+    );
+  }
 </script>
 
 <main id="change">
@@ -146,16 +189,24 @@
   <button on:click={copy}>
     <span style="font-size:1em " id="compliment1">{buttonstr}</span>
   </button>
-  <div style="color:white;font-size:1.2em;margin-bottom:0.5em;">
+  <div style="color:white;font-size:1rem;margin-bottom:0.5em;">
     {#if colorName}
-      <span> <b>{colorName}</b></span>
+      <span><b>{colorName}</b></span>
     {/if}
+  </div>
+  <div class="share-btn-container">
+    <button
+      on:click={shareColorCard}
+      class="share-btn"
+      title="Save or Share Color Card"
+    >
+     💾
+    </button>
   </div>
   <!-- svelte-ignore a11y-media-has-caption -->
   <div class="parent">
     <button id="compliment" class="pauseButton" on:click={pauseVideo}>
-      <video id="myvideo" autoplay bind:this={video} playsinline /></button
-    >
+      <video id="myvideo" autoplay bind:this={video} playsinline /></button>
     <div id="c2" class="aimline" />
   </div>
   <p>
@@ -255,5 +306,28 @@
     margin: 0 auto;
     vertical-align: auto;
     transform: translate(-7px, -7px);
+  }
+  .share-btn-container {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+  }
+  .share-btn {
+    background: rgba(0, 0, 0, 0);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .share-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
   }
 </style>

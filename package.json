@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "color": "^4.2.3",
-    "color-name-list": "^11.24.2"
+    "color-name-list": "^11.24.2",
+    "html2canvas": "^1.4.1"
   }
 }
