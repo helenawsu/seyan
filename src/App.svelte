@@ -191,7 +191,7 @@
   </button>
   <div style="color:white;font-size:0.5rem;margin-bottom:0.5em;">
     {#if colorName}
-      <span><b>{colorName}</b></span>
+      <span style={`color: rgba(${getComplimentColor(pixel)?.data?.join(',') || '255,255,255,1'});`}><b>{colorName}</b></span>
     {/if}
   </div>
   <div class="share-btn-container">
